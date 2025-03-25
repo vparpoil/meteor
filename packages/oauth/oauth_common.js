@@ -1,4 +1,5 @@
 OAuth._storageTokenPrefix = "Meteor.oauth.credentialSecret-";
+OAuth._storageErrorPrefix = "Meteor.oauth.";
 
 OAuth._redirectUri = (serviceName, config, params, absoluteUrlOptions) => {
   // Clone because we're going to mutate 'params'. The 'cordova' and

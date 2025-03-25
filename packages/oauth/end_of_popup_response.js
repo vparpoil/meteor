@@ -30,6 +30,18 @@
     }
   }
 
+  // Save OAuth errors in localStorage
+  if (config.error) {
+    try {
+      localStorage[config.storageErrorPrefix + "error"] = config.error;
+      if (config.error_description) {
+        localStorage[config.storageErrorPrefix + "error_description"] = config.error_description;
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   if (! config.isCordova) {
     document.getElementById("completedText").style.display = "block";
     document.getElementById("loginCompleted").onclick = function() { window.close() };
