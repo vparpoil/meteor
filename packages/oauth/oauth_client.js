@@ -90,10 +90,32 @@ OAuth.getDataAfterRedirect = () => {
   } catch (e) {
     Meteor._debug('error retrieving credentialSecret', e);
   }
+
+  // Check for OAuth errors stored in localStorage
+  const errorKey = OAuth._storageErrorPrefix + "error";
+  const errorDescKey = OAuth._storageErrorPrefix + "error_description";
+  let error, errorDescription;
+
+  try {
+    error = localStorage.getItem(errorKey);
+    if (error) {
+      localStorage.removeItem(errorKey);
+    }
+
+    errorDescription = localStorage.getItem(errorDescKey);
+    if (errorDescription) {
+      localStorage.removeItem(errorDescKey);
+    }
+  } catch (e) {
+    // Ignore localStorage errors
+  }
+
   return {
     loginService: migrationData.loginService,
     credentialToken,
     credentialSecret,
+    error,
+    errorDescription,
   };
 };
 
@@ -154,4 +176,30 @@ OAuth._retrieveCredentialSecret = credentialToken => {
     delete credentialSecrets[credentialToken];
   }
   return secret;
+};
+
+/**
+ * Retrieve oauth error from localStorage
+ * @returns {{errorDescription: string, error: string}|boolean|boolean}
+ */
+OAuth.retrieveError = () => {
+  const errorKey = OAuth._storageErrorPrefix + "error";
+  const errorDescKey = OAuth._storageErrorPrefix + "error_description";
+  try{
+    const error = localStorage.getItem(errorKey);
+    const errorDescription = localStorage.getItem(errorDescKey);
+
+    // Clear the error after retrieving it
+    if (error) {
+      localStorage.removeItem(errorKey);
+    }
+    if (errorDescription) {
+      localStorage.removeItem(errorDescKey);
+    }
+
+    return error ? { error, errorDescription } : false;
+  }
+  catch (e){
+    return false;
+  }
 };
